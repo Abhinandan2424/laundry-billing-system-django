@@ -1,0 +1,145 @@
+{% extends 'billing/base.html' %}
+{% block content %}
+
+<style>
+    body {
+        font-family: Arial, Helvetica, sans-serif;
+    }
+
+    h2 {
+        text-align: center;
+        color: #2c3e50;
+        margin-bottom: 25px;
+    }
+
+    form {
+        width: 90%;
+        margin: auto;
+        background: #f9f9f9;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 15px;
+    }
+
+    table, th, td {
+        border: 1px solid #ccc;
+    }
+
+    th {
+        background-color: #2c3e50;
+        color: #fff;
+        padding: 8px;
+        text-align: center;
+    }
+
+    td {
+        padding: 6px;
+        text-align: center;
+    }
+
+    select, input[type="number"] {
+        width: 90%;
+        padding: 5px;
+        border-radius: 4px;
+        border: 1px solid #ccc;
+    }
+
+    button {
+        padding: 5px 12px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .btn-add {
+        background-color: #27ae60;
+        color: white;
+    }
+
+    .btn-remove {
+        background-color: #c0392b;
+        color: white;
+    }
+
+    .btn-submit {
+        background-color: #2980b9;
+        color: white;
+        font-size: 16px;
+        padding: 8px 20px;
+        margin-top: 15px;
+        display: block;
+        width: 100%;
+        border-radius: 6px;
+    }
+
+</style>
+
+<h2>Create Monthly Bill</h2>
+
+<form method="post">
+    {% csrf_token %}
+
+    {{ bill_form.as_p }}
+
+    <h3>Items</h3>
+
+    <table id="items-table">
+        <thead>
+            <tr>
+                <th>Item</th>
+                <th>Quantity</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    <select name="item">
+                        {% for item in items %}
+                        <option value="{{ item.id }}">{{ item.name }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+                <td>
+                    <input type="number" name="quantity" required min="1">
+                </td>
+                <td>
+                    <button type="button" class="btn-add" onclick="addRow()">+</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <button type="submit" class="btn-submit">Generate Bill</button>
+</form>
+
+<script>
+function addRow() {
+    let table = document.getElementById("items-table").getElementsByTagName('tbody')[0];
+    let row = table.insertRow();
+
+    row.innerHTML = `
+        <td>
+            <select name="item">
+                {% for item in items %}
+                <option value="{{ item.id }}">{{ item.name }}</option>
+                {% endfor %}
+            </select>
+        </td>
+        <td>
+            <input type="number" name="quantity" required min="1">
+        </td>
+        <td>
+            <button type="button" class="btn-remove" onclick="this.closest('tr').remove()">-</button>
+        </td>
+    `;
+}
+</script>
+
+{% endblock %}

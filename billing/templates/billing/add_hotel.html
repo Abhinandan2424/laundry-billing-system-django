@@ -1,0 +1,36 @@
+{% extends 'billing/base.html' %}
+{% block content %}
+
+<div class="card">
+    <h2>Add Hotel</h2>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Save Hotel</button>
+    </form>
+</div>
+
+<div class="card" style="margin-top:20px;">
+    <h2>Hotel List</h2>
+
+    <table>
+        <tr>
+            <th>Name</th>
+            <th>Transport Rate</th>
+            <th>Action</th>
+        </tr>
+        {% for h in hotels %}
+        <tr>
+            <td>{{ h.name }}</td>
+            <td>{{ h.transport_rate_per_trip }}</td>
+            <td>
+                <a href="{% url 'update_hotel' h.id %}" class="btn-sm text-white btn-edit">Edit</a>
+                <a href="{% url 'delete_hotel' h.id %}" class="btn-sm text-white btn-danger">Delete</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+
+{% endblock %}

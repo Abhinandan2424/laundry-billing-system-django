@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div id="print-area">
+    {% include 'billing/print_bill.html' %}
+</div>
+
+<button onclick="window.print()">Print</button>
+{% endblock %}

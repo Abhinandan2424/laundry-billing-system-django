@@ -1,0 +1,101 @@
+{% extends 'billing/base.html' %}
+{% block title %}Billing Summary{% endblock %}
+
+{% block content %}
+
+<div class="card shadow-lg border-0 p-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="mb-0">📊 Monthly Billing Summary</h4>
+
+        <form method="get" class="d-flex gap-2">
+            <input
+                type="text"
+                name="month"
+                class="form-control form-control-sm"
+                placeholder="Month"
+                value="{{ selected_month }}"
+                style="width:140px;"
+            />
+            <button class="btn btn-sm btn-primary">
+                Filter
+            </button>
+        </form>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-success py-2 mb-3">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="table-responsive">
+        <table class="table table-hover align-middle text-center">
+            <thead class="table-dark">
+                <tr>
+                    <th>Invoice</th>
+                    <th>Hotel</th>
+                    <th>Month</th>
+                    <th>Items ₹</th>
+                    <th>Transport ₹</th>
+                    <th>Total ₹</th>
+                    <th width="220">Actions</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for row in summary %}
+                <tr>
+                    <td><b>{{ row.bill.invoice_no }}</b></td>
+                    <td>{{ row.bill.hotel.name }}</td>
+                    <td>{{ row.bill.month }}</td>
+                    <td>{{ row.items_total|floatformat:2 }}</td>
+                    <td>{{ row.transport_total|floatformat:2 }}</td>
+                    <td class="fw-bold text-success">
+                        {{ row.grand_total|floatformat:2 }}
+                    </td>
+                    <td>
+                        <div class="d-flex justify-content-center gap-2">
+                            <a href="{% url 'print_bill' row.bill.id %}"
+                               class="btn btn-outline-primary btn-sm">
+                                🖨 Print
+                            </a>
+
+                            <a href="{% url 'bill_pdf' row.bill.id %}"
+                               class="btn btn-outline-success btn-sm">
+                                📄 PDF
+                            </a>
+
+                            <form method="post"
+                                  action="{% url 'delete_bill' row.bill.id %}"
+                                  onsubmit="return confirm('Delete this invoice?');">
+                                {% csrf_token %}
+                                <button class="btn btn-outline-danger btn-sm">
+                                    🗑 Delete
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="text-muted py-4">
+                        No billing data available
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="d-flex justify-content-end mt-3">
+        <div class="alert alert-dark mb-0 fs-5">
+            <b>Total Revenue:</b> ₹ {{ total_grand|floatformat:2 }}
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,206 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Laundry Invoice</title>
+
+    <style>
+        @page {
+            size: A4;
+            margin: 1cm;
+        }
+
+        body {
+            font-family: Helvetica, Arial, sans-serif;
+            font-size: 12px;
+        }
+
+        .company-header {
+            width: 100%;
+        }
+
+        .company-header td {
+            border: none;
+        }
+
+        .logo {
+            width: 120px;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 22px;
+        }
+
+        .tagline {
+            font-size: 11px;
+            color: #444;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th, td {
+            border: 1px solid #000;
+            padding: 6px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #eeeeee;
+        }
+
+        .no-border td {
+            border: none;
+            text-align: left;
+            padding: 4px;
+        }
+
+        .right {
+            text-align: right;
+        }
+
+        .total-row td {
+            font-weight: bold;
+        }
+
+        .section-title {
+            font-weight: bold;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- COMPANY HEADER -->
+<table class="company-header">
+    <tr>
+        <td width="25%">
+            <img src="{% static 'images/company_logo.jpg' %}" class="logo">
+            <h1>Vikas Washing Company</h1>
+            <div class="tagline">Premium Laundry Services for Hotels & Institutions</div>
+            <div style="font-size:11px; margin-top:4px;">
+                Nebapur, Panhala – 416201<br>
+                Mo. No: 9158985355 / 9922058086 / 7083205959
+            </div>
+        </td>
+    </tr>
+</table>
+
+<hr>
+
+<!-- INVOICE INFO -->
+<table class="no-border">
+    <tr>
+        <td><b>Invoice No:</b> {{ bill.invoice_no }}</td>
+        <td class="right"><b>Invoice Date:</b> {{ bill.created_at|date:"d-m-Y" }}</td>
+    </tr>
+    <tr>
+        <td><b>Billing Month:</b> {{ bill.month }}</td>
+        <td class="right"><b>Client Code:</b> {{ bill.hotel.id }}</td>
+    </tr>
+</table>
+
+<!-- CLIENT DETAILS -->
+<div class="section-title">Billed To:</div>
+<table class="no-border">
+    <tr>
+        <td>
+            <b>{{ bill.hotel.name }}</b><br>
+            {{ bill.hotel.address }}
+        </td>
+    </tr>
+</table>
+
+<!-- ITEM TABLE -->
+<table>
+    <thead>
+        <tr>
+            <th>Sr</th>
+            <th>Item Description</th>
+            <th>Qty</th>
+            <th>Rate (₹)</th>
+            <th>Amount (₹)</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for bi in bill.items.all %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ bi.item.name }}</td>
+            <td>{{ bi.quantity }}</td>
+            <td>{{ bi.rate|floatformat:2 }}</td>
+            <td>{{ bi.total|floatformat:2 }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<!-- TOTAL SUMMARY -->
+<table>
+    <tr class="total-row">
+        <td colspan="4" class="right">Items Total</td>
+        <td>{{ bill.items_total|floatformat:2 }}</td>
+    </tr>
+    <tr class="total-row">
+        <td colspan="4" class="right">
+            Transportation Charges ({{ bill.total_trips }} × {{ bill.hotel.transport_rate_per_trip|floatformat:2 }})
+        </td>
+        <td>{{ bill.transport_total|floatformat:2 }}</td>
+    </tr>
+    <tr class="total-row">
+        <td colspan="4" class="right">Grand Total</td>
+        <td>{{ bill.grand_total|floatformat:2 }}</td>
+    </tr>
+    <tr>
+        <td colspan="5" style="text-align: left; padding: 8px;">
+            <b>Amount in Words:</b> {{ bill.grand_total_in_words }} Only.
+        </td>
+    </tr>
+</table>
+
+
+
+<!-- PAYMENT TERMS -->
+<div class="section-title">Payment Terms</div>
+<table class="no-border">
+    <tr>
+        <td>
+            • Payment due within <b>7 days</b> from invoice date.<br>
+            • Any delay may result in service interruption.<br>
+            • Payment mode: Cash / UPI / Bank Transfer.
+        </td>
+    </tr>
+</table>
+
+<br><br>
+
+<!-- AUTHORIZATION -->
+<table class="no-border">
+    <tr>
+        <td width="70%"></td>
+        <td width="30%" class="right">
+            <b>For Vikas Washing Company</b><br><br><br><br><br>
+            Authorized Signatory
+        </td>
+    </tr>
+</table>
+
+<br>
+
+<!-- FOOTER -->
+<table class="no-border">
+    <tr>
+        <td style="font-size:10px;">
+            This is a computer-generated invoice.
+        </td>
+    </tr>
+</table>
+
+</body>
+</html>
