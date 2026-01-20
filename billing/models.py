@@ -49,9 +49,7 @@ class MonthlyBill(models.Model):
     
     @property
     def grand_total_in_words(self):
-    # 'en_IN' provides the Indian numbering system (Lakhs/Crores)
         words = num2words(self.grand_total, lang='en_IN', to='currency', currency='INR')
-    # Use 'words' (the variable name), not 'self.words'
         return words.title() 
 
     def save(self, *args, **kwargs):
